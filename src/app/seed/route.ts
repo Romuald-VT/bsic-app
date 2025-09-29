@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import bcrypt from 'bcrypt'
-import { Customer } from "@/lib/asset/definitions";
 import sql from "../db";
 import { bsicAdmin, data, salt } from "@/lib/asset/data";
 
