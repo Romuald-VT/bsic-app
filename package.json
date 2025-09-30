@@ -10,11 +10,19 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.9.0",
     "bcrypt": "^6.0.0",
     "next": "15.5.4",
     "postgres": "^3.4.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
+    "react-slick": "^0.31.0",
+    "react-toastify": "^11.0.5",
+    "react-tooltip": "^5.29.1",
+    "redux-persist": "^6.0.0",
+    "slick-carousel": "^1.8.1",
     "zod": "^4.1.11"
   },
   "devDependencies": {
@@ -24,6 +32,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-slick": "^0.23.13",
+    "@types/slick-carousel": "^1.6.40",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4",

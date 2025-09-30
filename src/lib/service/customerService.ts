@@ -1,3 +1,5 @@
+"use server"
+
 import { Customer, CustomerDTO } from "../asset/definitions";
 import { insertCustomer,updateCustomer,updateCustomerAccountType,updateCustomerAmount,
     deleteCustomerByEmail,getCustomerByID,getCustomerByEmail,getAllCustomer } from "../repository/customerRepository";
