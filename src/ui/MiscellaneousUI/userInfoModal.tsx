@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { createPortal } from "react-dom"
-import UserUidForm from "./UserUIDForm/userUidForm"
+import UserUidForm from "../UserUIDForm/userUidForm"
 
 const UserInfoMod = ()=>{
    

@@ -14,9 +14,8 @@ import { generateCustomerID } from '../asset/data';
 })
 
 export const userSchema = z.object({
-    username: z.string().max(100).min(3),
-    email: z.email({pattern:z.regexes.html5Email}),
-    password: z.string().regex(/[a-z0-9]/i),
+    username: z.string({error:"veuillez entrer un nom d'utilisateur valide !"}).max(100).min(3),
+    password: z.string().regex(/[a-z0-9]/i,{error:"nom d'utilisateur et /ou mot de passe incorrect"}),
 })
 
 export const fromDtoToModel = (data:CustomerDTO)=>{

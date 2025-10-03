@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
+    "@types/react-toastify": "^4.0.2",
     "bcrypt": "^6.0.0",
+    "jose": "^6.1.0",
     "next": "15.5.4",
     "postgres": "^3.4.7",
     "react": "19.1.0",

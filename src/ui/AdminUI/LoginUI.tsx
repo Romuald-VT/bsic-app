@@ -1,22 +1,42 @@
 /* eslint-disable no-unused-vars */
 'use client'
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useFormState,useFormStatus } from "react-dom";
 import { toast } from "react-toastify";
 
 // 👉 Icônes Heroicons
 import { HiUser, HiEye, HiEyeOff } from "react-icons/hi";
+import { Login } from "@/lib/service/customerService";
+import { useRouter } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
+import { ActionResult } from "@/lib/asset/definitions";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // 👈 toggle MDP
-  const [errorMessage, setErrorMessage] = useState("");
-  const [display, setDisplay] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-
+  const {pending} = useFormStatus()
+  const [state, formAction] = useFormState(Login,undefined)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get('redirect') || '/dashboard'
   
+  useEffect(() => {
+    if (state?.success) {
+      console.log(state.success)
+      router.replace(redirect);
+      router.refresh()
+    }
+    if(state?.error)
+    {
+      setErrorMessage(state.error)
+      console.log(state.error)
+    }
+   
+  }, [state?.success,state?.error,router, redirect]);
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
@@ -25,7 +45,7 @@ const LoginForm = () => {
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
             Identification Administrateur
           </h2>
-          <form >
+          <form action={formAction}>
             {/* Champ utilisateur */}
             <div className="mb-4 relative">
               <label
@@ -84,14 +104,14 @@ const LoginForm = () => {
             <div className="flex items-center justify-between">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={pending}
                 className={`${
-                  loading
+                  pending
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-500 hover:bg-blue-600"
                 } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full flex items-center justify-center`}
               >
-                {loading ? (
+                {pending ? (
                   <>
                     <svg
                       className="animate-spin h-5 w-5 mr-2 text-white"
@@ -124,7 +144,7 @@ const LoginForm = () => {
 
           {/* Message d'erreur */}
           <div className="text-center mt-4 text-sm">
-            {display && (
+            { state?.error&& (
               <p className="text-center text-red-700 mt-5 text-sm">
                 {errorMessage}
               </p>

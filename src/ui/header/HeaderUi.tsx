@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import  Link  from "next/link";
-import UserInfoMod from "../userInfoModal"
+import UserInfoMod from "../MiscellaneousUI/userInfoModal"
 import Image from "next/image";
 
 const navItems = [

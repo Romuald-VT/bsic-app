@@ -1,9 +1,13 @@
 "use server"
 
-import { Customer, CustomerDTO } from "../asset/definitions";
+import { redirect } from "next/navigation";
+import { ActionResult, Customer, CustomerDTO, User } from "../asset/definitions";
+import { createSession, deleteSession, getSession, SessionData } from "../auth";
 import { insertCustomer,updateCustomer,updateCustomerAccountType,updateCustomerAmount,
-    deleteCustomerByEmail,getCustomerByID,getCustomerByEmail,getAllCustomer } from "../repository/customerRepository";
-import { customerSchema, fromDtoToModel } from "../validation/validators";
+    deleteCustomerByEmail,getCustomerByID,getCustomerByEmail,getAllCustomer, 
+    loginUser} from "../repository/customerRepository";
+import { customerSchema, fromDtoToModel, userSchema } from "../validation/validators";
+import { success } from "zod";
 
 export async function handleCustomerForm(customerData:FormData)
 {
@@ -37,7 +41,62 @@ export async function handleCustomerForm(customerData:FormData)
     return savedData
 }
 
-export function handleUpdateCustomerData (formData:FormData,email:string)
+export async function Login(prevState:ActionResult|undefined,loginData:FormData)
+{
+    try{
+        const rawLoginData:User = {
+        username:String(loginData.get('username')),
+        password:String(loginData.get('password')),
+    }
+    const validatedUserData = userSchema.safeParse(rawLoginData)
+    if(validatedUserData.error || !validatedUserData.data)
+    {
+        throw new Error('nom d\'utilisateur et /ou mot de passe incorrect')
+    }
+    console.log('from file customerService.ts')
+    console.log(`validate user data ${validatedUserData.data}`)
+    const {username,password} = validatedUserData.data
+    const response = await loginUser(username,password)
+    console.log(`response: ${response?.username}  in customerService.ts`)
+    if(!response ||response.error)
+    {
+        throw new Error("erreur d'authentification !")
+    }
+     const dataSession:SessionData=
+     {
+        username:response.username,
+        isAdmin:response.isAdmin,
+     }
+    await createSession(dataSession)
+    
+
+    return {success:true}
+    }
+    catch(error:unknown)
+    {
+        if(error instanceof Error)
+        return{
+            success:false,
+            error:`erreur de serveur ${error.message}`
+        }
+        if(error instanceof String)
+        {
+            return {
+                success:false,
+                error:`erreur de serveur ${error.at(0)} `
+            }
+        }
+    }
+    
+    
+}
+export async function handleLogout()
+{
+    await deleteSession()
+    redirect('/admin')
+}
+
+export async function handleUpdateCustomerData (formData:FormData,email:string)
 {
     if(!email)
     {
@@ -55,7 +114,7 @@ export function handleUpdateCustomerData (formData:FormData,email:string)
     const updatedCustomer = updateCustomer(email,customer)
     return updatedCustomer  
 }
-export function handleUpdateCustomerAccountType(formData:FormData,email:string)
+export async function handleUpdateCustomerAccountType(formData:FormData,email:string)
 {
     if(!email)
     {
@@ -70,7 +129,7 @@ export function handleUpdateCustomerAccountType(formData:FormData,email:string)
     return updatedAccountType
 } 
 
-export function handleUpdateCustomerAmount(formData:FormData,email:string)
+export async function handleUpdateCustomerAmount(formData:FormData,email:string)
 {
     if(!email)
     {
@@ -119,12 +178,17 @@ export async function handleGetCustomerByEmail(email:string)
     return customer
 } 
 
-export async function handleGetAllCustomers(occurences:number,page:number)
+export async function handleGetAllCustomers()
 {
-    const customers = await getAllCustomer(occurences,page)
-    if(!customers || customers.result.length === 0)
+    const customers = await getAllCustomer()
+    if(customers.error || !customers )
     {
-        throw new Error('Aucun client trouve')
+       throw new Error( customers.error)
     }
-    return customers
+    return customers.data
+}
+
+// Action pour récupérer l'utilisateur courant
+export async function getCurrentUser() {
+  return await getSession();
 }

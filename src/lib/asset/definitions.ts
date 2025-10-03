@@ -23,7 +23,24 @@ export type CustomerDTO={
 
 export type User ={
     username:string,
-    email:string,
-    password:string,
-    isAdmin:boolean
+    password:string
+}
+
+export type CustomerFormData={
+    firstname: string
+    lastname: string
+    email: string
+    phone: string
+    accountNumber: number
+    amount: number
+}
+export type ActionResult = {
+  success: boolean;
+  error?: string;
+  fieldErrors?: Record<string, string[]>;
+} 
+
+export type UserLogged={
+    username:string,
+    email:string
 }

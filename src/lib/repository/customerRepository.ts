@@ -1,20 +1,65 @@
 import sql from "../../app/db";
+import bcrypt from 'bcrypt';
 import { Customer } from "../asset/definitions";
 
+// ✅ VERSION CORRIGÉE
+export async function getAllCustomer() {
+  try {
+    const data = await sql`SELECT * FROM customers`;
+    
+    // Vérifier si data existe et a des rows
+    if (!data) {
+      return { 
+        success: false, 
+        error: "Aucun client trouvé",
+        data: [] 
+      };
+    }
+    
+    return { 
+      success: true, 
+      data: data
+    };
+    
+  } catch (error) {
+    if(error instanceof AggregateError) {
+    console.error('Erreur lors de la récupération des clients:',error.message);
+    }
+    if(error instanceof String) {
+        console.error('Erreur inconnue lors de la récupération des clients:', error.at(0));
+    }
+    return { 
+      success: false, 
+      error: 'Erreur serveur Reseau Instable !',
+      data: [] 
+    };
+  }
+}
 
-export async function getAllCustomer(occurences:number,page:number)
+export async function loginUser(username:string,password:string)
 {
-    try {
-        const data = await sql`SELECT * FROM customers`
-        const nbPage = Math.round(data.length/occurences)
-        const result = data.slice((page-1)*occurences,occurences*page)
-        return {result,nbPage}
-    } catch (error) {
-        
-        if (error instanceof Error) {
-            throw new Error(error.message);
-        } else {
-            throw new Error(String(error));
+    if(!username || !password)
+    {
+        throw new Error("veuillez entre un nom d'utilisateur et /ou un mot de passe valide !")
+    }
+    try{
+    const user = await sql`SELECT * FROM users WHERE username=${username}`
+    if(!user)
+    {
+        return {error:"utilisateur incorrect"}
+    }
+    const isSamePassword = await bcrypt.compare(password,user.at(0)?.password || '',)
+    if(!isSamePassword)
+    {
+        return {error:"nom d'utilisateur et /ou mot de passe incorrect"}
+    }
+    return {username:user[0].username,isAdmin:user[0].isAdmin}
+    }
+    catch(error)
+    {
+        if(error instanceof Error)
+        {
+            return {error:error}
         }
     }
 }

@@ -81,7 +81,7 @@ export const data = [
 
 export const salt = await bcrypt.genSalt(10)
 
-export const bsicAdmin:User = {
+export const bsicAdmin = {
     username:'bsic-admin',
     email:'romualdtchatcho@gmail.com',
     password:'bsicadmin0000',
