@@ -1,7 +1,7 @@
 "use server"
 
 import { redirect } from "next/navigation";
-import { ActionResult, Customer, CustomerDTO, User } from "../asset/definitions";
+import { ActionResult, Customer, CustomerDTO, UpdateAccountResult, User } from "../asset/definitions";
 import { createSession, deleteSession, getSession, SessionData } from "../auth";
 import { insertCustomer,updateCustomer,updateCustomerAccountType,updateCustomerAmount,
     deleteCustomerByEmail,getCustomerByID,getCustomerByEmail,getAllCustomer, 
@@ -57,10 +57,9 @@ export async function Login(prevState:ActionResult|undefined,loginData:FormData)
     console.log(`validate user data ${validatedUserData.data}`)
     const {username,password} = validatedUserData.data
     const response = await loginUser(username,password)
-    console.log(`response: ${response?.username}  in customerService.ts`)
     if(!response ||response.error)
     {
-        throw new Error("erreur d'authentification !")
+        throw new Error("erreur lors du processus d'authentification !")
     }
      const dataSession:SessionData=
      {
@@ -114,19 +113,43 @@ export async function handleUpdateCustomerData (formData:FormData,email:string)
     const updatedCustomer = updateCustomer(email,customer)
     return updatedCustomer  
 }
-export async function handleUpdateCustomerAccountType(formData:FormData,email:string)
+export async function handleUpdateCustomerAccountType(email:string,prevState:UpdateAccountResult|null,formData:FormData)
 {
+    try{
     if(!email)
     {
-        throw new Error("email du client manquant")
+        return {
+            success:false,
+            error:"email du client manquant"    
+        }
     }
     if(!formData.get('accountType'))
     {
-        throw new Error("type de compte manquant")
+        return {
+            success:false,
+            error:"type de compte manquant"
+        }
     }
     const accountType = String(formData.get('accountType'))
     const updatedAccountType = updateCustomerAccountType(email,accountType)
-    return updatedAccountType
+    return {
+        success:true,
+        data:updatedAccountType
+    }
+    } catch (error:unknown) {
+        if (error instanceof Error) {
+            return {
+                success:false,
+                error:error.message
+            }
+        } else {
+            return {
+                success:false,
+                error:String(error)
+            }
+        }
+    }
+
 } 
 
 export async function handleUpdateCustomerAmount(formData:FormData,email:string)

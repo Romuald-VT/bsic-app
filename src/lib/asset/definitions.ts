@@ -44,3 +44,8 @@ export type UserLogged={
     username:string,
     email:string
 }
+
+ export type UpdateAccountResult = {
+  success: boolean;
+  error?: string;
+};

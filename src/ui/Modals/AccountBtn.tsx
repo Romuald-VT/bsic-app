@@ -1,6 +1,8 @@
 'use client'
 import { useState } from "react"
 import { toast } from "react-toastify"
+import { useFormState,useFormStatus } from "react-dom";
+import { handleUpdateCustomerAccountType } from "@/lib/service/customerService";
 
 interface AccountButtonProps{
     showModal: ()=>void;
@@ -10,6 +12,9 @@ interface AccountButtonProps{
 
 const AccountButton: React.FC<AccountButtonProps>= ({ showModal, email, onAccountUpdated }) => {
   const [accountType, setAccountType] = useState("Compte Epargne")
+  const {pending} = useFormStatus()
+
+  const [state,formAction] = useFormState(handleUpdateCustomerAccountType,undefined)
 
 
   return (
@@ -36,7 +41,9 @@ const AccountButton: React.FC<AccountButtonProps>= ({ showModal, email, onAccoun
         </div>
 
         {/* Contenu centré */}
-        <div className="flex flex-col justify-center items-center flex-grow gap-6 p-4">
+        <form 
+         action={formAction}
+        className="flex flex-col justify-center items-center flex-grow gap-6 p-4">
           <select
             className="w-full max-w-xs h-12 px-3 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={accountType}
@@ -50,9 +57,16 @@ const AccountButton: React.FC<AccountButtonProps>= ({ showModal, email, onAccoun
           <button
             className="text-white bg-blue-600 w-full max-w-xs h-12 font-medium rounded-md hover:bg-blue-700 transition-colors"
           >
-            Mettre à jour
+            {pending ? 'Mise a jour...':"Mettre à jour"}
+            
           </button>
-        </div>
+            {/* Message d'erreur */}
+        {
+        state?.error && (
+          toast.error(state.error)
+        )}
+        </form>
+      
       </div>
     </>
   )
