@@ -132,6 +132,7 @@ const ClientForm:React.FC<ClientFormProps> = ({ setModal, onCustomerAdded }) => 
             name="amount"
             value={amount}
             onChange={e=>setAmount(Number(e.target.value))}
+            min={0}
             placeholder="Montant"
             required
             className="w-full h-9 px-2 border rounded"
