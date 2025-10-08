@@ -4,17 +4,15 @@
 import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
-import serverStore from '@/lib/utils/serverStore';
-import { deleteProfileSession, getProfileSession, ProfileSessionData } from '@/lib/auth';
-import { Customer, CustomerDTO } from '@/lib/asset/definitions';
-import { getCustomerByUUID } from '@/lib/repository/customerRepository';
+import { deleteProfileSession, getProfileSession } from '@/lib/auth';
+import { CustomerDTO } from '@/lib/asset/definitions';
+
 import { handleGetCustomerByID } from '@/lib/service/customerService';
 
 
 const UserProfile = () => {
     const [userData, setUserData] = useState<CustomerDTO>();
-    const [loading, setLoading] = useState(true); // 👈 État de chargement
-    const [error, setError] = useState(null); // 👈 État d'erreur
+
 
 
     const handleLogout = () => {
