@@ -1,7 +1,6 @@
 'use client'
-import { useEffect, useState } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { toast } from "react-toastify"
-import { useFormState,useFormStatus } from "react-dom";
 import { handleUpdateCustomerAccountType } from "@/lib/service/customerService";
 
 interface AccountButtonProps{
@@ -12,10 +11,9 @@ interface AccountButtonProps{
 
 const AccountButton: React.FC<AccountButtonProps>= ({ showModal, email, onAccountUpdated }) => {
   const [accountType, setAccountType] = useState("Compte Epargne")
-  const {pending} = useFormStatus()
 
 
-  const [state,formAction,isPending] = useFormState(handleUpdateCustomerAccountType,null)
+  const [state,formAction,isPending] = useActionState(handleUpdateCustomerAccountType,null)
    
   useEffect(()=>{
        
