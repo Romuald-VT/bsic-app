@@ -40,9 +40,9 @@ const UserProfile = () => {
                     lastname: response[0].lastname,
                     email: response[0].email,
                     job: response[0].job,
-                    phoneNumber: response[0].phoneNumber,
-                    accountNumber: response[0].accountNumber,
-                    accountType: response[0].accountType,
+                    phoneNumber: response[0].phonenumber,
+                    accountNumber: response[0].accountnumber,
+                    accountType: response[0].accounttype,
                     amount: response[0].amount
                 }
                 setUserData(customer)
