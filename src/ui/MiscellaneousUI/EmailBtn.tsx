@@ -19,7 +19,7 @@ const EmailButton:React.FC<EmailButtonProps> = ({userData, onEmailUpdated})=>{
            <button className="w-5 h-5 text-blue-600" 
            onClick={()=>{setShowModal(true)}} id="email"><FaPen/></button>
            <Tooltip anchorSelect="#email" place="top">
-            Notifier le Client
+            Motifier les infos du client
            </Tooltip>
            {
              showModal && createPortal(<UpdateFormModal showModal={()=>{setShowModal(false)}} data={userData} onEmailUpdated={onEmailUpdated}/>,document.body)

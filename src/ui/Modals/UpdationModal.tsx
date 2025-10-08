@@ -10,7 +10,7 @@ interface EmailModalProps {
     onEmailUpdated: () => void;
 }
 
-const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
+const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal , onEmailUpdated }) => {
   const [formData, setFormData] = useState({
     firstname: data.firstname,
     lastname: data.lastname,
@@ -30,6 +30,7 @@ const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
        if(state?.success)
        {
         toast.success("Mise a jour effectuée avec succès !")
+        onEmailUpdated()
         showModal()
        }
        if(state && !state.success)
@@ -37,7 +38,7 @@ const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
         toast.error(state.error || "Erreur lors de la mise a jour !")
        }
 
-  }, [state,showModal]);
+  }, [state,showModal,onEmailUpdated]);
 
   const handleReset = () => {
     setFormData({

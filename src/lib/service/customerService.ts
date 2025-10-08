@@ -274,13 +274,14 @@ export async function handleUpdateCustomerData (prevState:ActionResponse|null,fo
         firstname: formData.get('firstname')?String(formData.get('firstname')):undefined,
         lastname: formData.get('lastname')?String(formData.get('lastname')):undefined,
         job: formData.get('job')?String(formData.get('job')):undefined,
-        phoneNumber: formData.get('phoneNumber')?String(formData.get('phoneNumber')):undefined,
+        phoneNumber: formData.get('phoneNumber')?String(formData.get('phone')):undefined,
         accountType: formData.get('accountType')?String(formData.get('accountType')):undefined,
         accountNumber: formData.get('accountNumber')?Number(formData.get('accountNumber')):undefined,
         amount: formData.get('amount')?Number(formData.get('amount')):undefined
     }
     const email = String(formData.get('email'))
     const updatedCustomer = await updateCustomer(email,customer)
+    console.log(updatedCustomer)
     if(!updatedCustomer || 'error' in updatedCustomer)
     {
         return {

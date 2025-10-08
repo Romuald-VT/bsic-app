@@ -136,7 +136,7 @@ export async function updateCustomer(email:string, customer:Partial<Customer>)
         phoneNumber = COALESCE(${customer.phoneNumber ?? null}, phoneNumber),
         amount = COALESCE(${customer.amount ?? null}, amount)
         WHERE email=${email}
-    RETURNING TRUE`
+        RETURNING *`
     return result[0] as Customer | undefined
     } catch (error) {
         
