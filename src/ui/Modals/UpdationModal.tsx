@@ -143,7 +143,6 @@ const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
                 setFormData({ ...formData, phone: e.target.value })
               }
               maxLength={15}
-              pattern="^6[0-9]$"
               title="Le numéro doit contenir 9 chiffres et commencer par 6 (format Cameroun)"
               required
               className="w-full h-8 mb-2 px-2 border border-gray-300 rounded"
