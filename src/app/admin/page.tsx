@@ -5,7 +5,15 @@ const AdminPage = ()=>{
 
     return(
         <>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+           <div className="flex flex-row justify-center items-center h-screen w-screen">
+        <div className="flex flex-col w-[400px] h-[300px] justify-center items-center border border-gray-300 rounded-lg p-6 shadow-lg bg-blue-50">
+          <div className="animate-pulse">
+            <p className="text-blue-500 text-xl">Chargement...</p>
+          </div>
+        </div>
+      </div>
+        }>
           <LoginForm/>
         </Suspense>
         </>
