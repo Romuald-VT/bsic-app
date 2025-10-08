@@ -37,7 +37,7 @@ const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
         toast.error(state.error || "Erreur lors de la mise a jour !")
        }
 
-  }, [state]);
+  }, [state,showModal]);
 
   const handleReset = () => {
     setFormData({

@@ -2,8 +2,6 @@
 import { useActionState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { handleUpdateCustomerAmount } from "@/lib/service/customerService";
-import { useFormState } from "react-dom";
-import { UpdateAmountResult } from "@/lib/asset/definitions";
 
 interface AmountDialogProps {
     number:number;
@@ -12,7 +10,7 @@ interface AmountDialogProps {
     onAmountUpdated:()=>void
 }
 
-const AmountDialog:React.FC<AmountDialogProps> = ({number, showModal, email, onAmountUpdated}) => {
+const AmountDialog:React.FC<AmountDialogProps> = ({showModal, email, onAmountUpdated}) => {
 
     const [state,formAction,isPending] = useActionState(handleUpdateCustomerAmount,undefined)
 
