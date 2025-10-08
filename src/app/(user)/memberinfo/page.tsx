@@ -6,13 +6,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import { redirect } from 'next/navigation';
 import serverStore from '@/lib/utils/serverStore';
 import { deleteProfileSession, getProfileSession, ProfileSessionData } from '@/lib/auth';
-import { Customer } from '@/lib/asset/definitions';
+import { Customer, CustomerDTO } from '@/lib/asset/definitions';
 import { getCustomerByUUID } from '@/lib/repository/customerRepository';
 import { handleGetCustomerByID } from '@/lib/service/customerService';
 
 
 const UserProfile = () => {
-    const [userData, setUserData] = useState<Customer>();
+    const [userData, setUserData] = useState<CustomerDTO>();
     const [loading, setLoading] = useState(true); // 👈 État de chargement
     const [error, setError] = useState(null); // 👈 État d'erreur
 
@@ -35,7 +35,17 @@ const UserProfile = () => {
             try {
                 
                 const response = await handleGetCustomerByID(uuidString);
-                setUserData(response.at(0))
+                const customer:CustomerDTO = {
+                    firstname: response[0].firstname,
+                    lastname: response[0].lastname,
+                    email: response[0].email,
+                    job: response[0].job,
+                    phoneNumber: response[0].phoneNumber,
+                    accountNumber: response[0].accountNumber,
+                    accountType: response[0].accountType,
+                    amount: response[0].amount
+                }
+                setUserData(customer)
                 toast.success("Données utilisateur récupérées avec succès.");
             } catch (err) {
                 toast.error("Erreur lors de la récupération des données utilisateur.");
@@ -87,14 +97,14 @@ const UserProfile = () => {
             <div className="mb-5">
                 <div className="font-semibold text-blue-500 mb-1">Type de compte</div>
                 <div className="text-base p-[10px] bg-[#f5f6fa] rounded-md mt-1">
-                    {userData?.accounttype || "Non renseigné"}
+                    {userData?.accountType || "Non renseigné"}
                 </div>
             </div>
             
             <div className="mb-5">
                 <div className="font-semibold text-blue-500 mb-1">Numéro de Compte</div>
                 <div className="text-base p-[10px] bg-[#f5f6fa] rounded-md mt-1">
-                    {userData?.accountnumber || "Non renseigné"}
+                    {userData?.accountNumber || "Non renseigné"}
                 </div>
             </div>
 
