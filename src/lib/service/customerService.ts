@@ -109,7 +109,7 @@ export async function Login(prevState:ActionResult|undefined,loginData:FormData)
     
 }
 
-export async function handleGetUserByUUID(prevState:ActionResponse|null,formData:FormData)
+export async function handleGetUserByUUID(prevState:ActionResponse|null,formData:FormData):Promise<ActionResponse>
 {
     try{
 
@@ -118,7 +118,18 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
         {
             return {
                 success:false,
-                error:"identifiant utilisateurs invalide"
+                error:"identifiant utilisateurs invalide",
+                data:{
+                    firstname:"",
+                    lastname:"",
+                    email:"",
+                    job:"",
+                    phoneNumber:"",
+                    accountNumber:0,
+                    accountType:"",
+                    amount:0,
+                    customerID:''
+                }
             }
         }
         const response = await getCustomerByUUID(uuid)
@@ -126,13 +137,37 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
         {
             return {
                 success:false,
-                error:"utilisateur introuvable"
+                error:"utilisateur introuvable",
+                data:{
+                    firstname:"",
+                    lastname:"",
+                    email:"",
+                    job:"",
+                    phoneNumber:"",
+                    accountNumber:0,
+                    accountType:"",
+                    amount:0,
+                    customerID:''
+                }
             }
         }
         await createCustomerSession({customerID:uuid})
+        const customer:Customer = {
+            firstname: response.at(0).firstname,
+            lastname: response.at(0).lastname,
+            email: response.at(0).email,
+            job: response.at(0).job,
+            accountType: response.at(0).accountType,
+            accountNumber: response.at(0).accountNumber,
+            phoneNumber: response.at(0).phoneNumber,
+            amount: response.at(0).amount,
+            customerID: response.at(0).customerID
+        }
+
         return {
             success:true,
-            data:response,
+            error:"",
+            data:customer,
         }
 
     }
@@ -142,14 +177,36 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
         {
             return {
                 success:false,
-                error:`erreur de serveur ${error.message}`
+                error:`erreur de serveur ${error.message}`,
+                data:{
+                    firstname:"",
+                    lastname:"",
+                    email:"",
+                    job:"",
+                    phoneNumber:"",
+                    accountNumber:0,
+                    accountType:"",
+                    amount:0,
+                    customerID:''
+                }
             }
         }
         if(error instanceof String)
         {
             return {
                 success:false,
-                error:`erreur de serveur ${error.at(0)} `
+                error:`erreur de serveur ${error.at(0)} `,
+                data:{
+                    firstname:"",
+                    lastname:"",
+                    email:"",
+                    job:"",
+                    phoneNumber:"",
+                    accountNumber:0,
+                    accountType:"",
+                    amount:0,
+                    customerID:''
+                }
             }
         }
     }
