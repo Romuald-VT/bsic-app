@@ -159,8 +159,7 @@ const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
               onChange={(e) =>
                 setFormData({ ...formData, accountNumber: Number(e.target.value) })
               }
-              minLength={10}
-              maxLength={10}
+              minLength={16}
               pattern="\d{10}"
               title="Le numéro de compte doit contenir exactement 10 chiffres"
               required
