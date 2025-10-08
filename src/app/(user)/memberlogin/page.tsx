@@ -4,7 +4,7 @@ import { useSearchParams,useRouter } from "next/navigation"
 import { Suspense, useActionState, useEffect, useState } from "react"
 
 
-const MemberLogin = ()=>{
+const MemberLoginForm = ()=>{
     
     const [uid,setUid] = useState('')
     const [state,formAction,isPending] = useActionState(handleGetUserByUUID,null)
@@ -21,15 +21,6 @@ const MemberLogin = ()=>{
 
 
     return(
-        <Suspense fallback={
-             <div className="flex flex-row justify-center items-center h-screen w-screen">
-        <div className="flex flex-col w-[400px] h-[300px] justify-center items-center border border-gray-300 rounded-lg p-6 shadow-lg bg-blue-50">
-          <div className="animate-pulse">
-            <p className="text-blue-500 text-xl">Chargement...</p>
-          </div>
-        </div>
-      </div>
-        }>
             <div className="flex flex-row justify-center items-center h-screen w-screen overflow-x-clip">
                 <div className="flex flex-col w-[400px] h-[300px] justify-center items-center border border-gray-300 rounded-lg p-6 shadow-lg bg-blue-50">
                     <div className="mb-6 text-2xl font-semibold relative top-[0px] w-full h-10 flex flex-row justify-center">
@@ -50,7 +41,22 @@ const MemberLogin = ()=>{
                     </form>
                 </div>
             </div>
-        </Suspense>
+    )
+}
+
+const MemberLogin = ()=>{
+    return(
+            <Suspense fallback={
+            <div className="flex flex-row justify-center items-center h-screen w-screen">
+                <div className="flex flex-col w-[400px] h-[300px] justify-center items-center border border-gray-300 rounded-lg p-6 shadow-lg bg-blue-50">
+                <div className="animate-pulse">
+                    <p className="text-blue-500 text-xl">Chargement...</p>
+                </div>
+                </div>
+            </div>
+            }>
+                <MemberLoginForm />
+            </Suspense>
     )
 }
 
