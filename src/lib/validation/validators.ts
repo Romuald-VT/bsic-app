@@ -2,6 +2,7 @@ import * as z from 'zod';
 import { Customer, CustomerDTO } from '../asset/definitions';
 import { generateCustomerID } from '../asset/data';
 
+
  export const customerSchema = z.object({
     firstname: z.string().max(100).min(3),
     lastname: z.string().max(100).min(3),
@@ -9,7 +10,7 @@ import { generateCustomerID } from '../asset/data';
     job: z.string(),
     accountType: z.string(),
     accountNumber:z.number(),
-    phoneNumber: z.string().regex(/[0-9]{15}/),
+    phoneNumber: z.string().regex(/[0-9]/).max(15),
     amount: z.number()
 })
 

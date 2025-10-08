@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { useFormState,useFormStatus } from "react-dom";
 import { handleUpdateCustomerAccountType } from "@/lib/service/customerService";
@@ -14,8 +14,22 @@ const AccountButton: React.FC<AccountButtonProps>= ({ showModal, email, onAccoun
   const [accountType, setAccountType] = useState("Compte Epargne")
   const {pending} = useFormStatus()
 
-  const [state,formAction] = useFormState(handleUpdateCustomerAccountType,undefined)
 
+  const [state,formAction,isPending] = useFormState(handleUpdateCustomerAccountType,null)
+   
+  useEffect(()=>{
+       
+    if(state?.success)
+    {
+      toast.success('type de compte mis a jour')
+      onAccountUpdated()
+      showModal()
+    }
+    if(state?.error)
+    {
+      toast.error("erreur lors de la mise a jour du type de compte !")
+    }
+  })
 
   return (
     <>
@@ -53,18 +67,15 @@ const AccountButton: React.FC<AccountButtonProps>= ({ showModal, email, onAccoun
             <option value="Compte Courant">Compte Courant</option>
             <option value="Compte OffShore">Compte Offshore</option>
           </select>
-
+          <input type="hidden" value={email} name="email"/>
+          <input type="hidden" value={accountType} name="accountType"/>
           <button
             className="text-white bg-blue-600 w-full max-w-xs h-12 font-medium rounded-md hover:bg-blue-700 transition-colors"
           >
-            {pending ? 'Mise a jour...':"Mettre à jour"}
+            {isPending ? 'Mise a jour...':"Mettre à jour"}
             
           </button>
             {/* Message d'erreur */}
-        {
-        state?.error && (
-          toast.error(state.error)
-        )}
         </form>
       
       </div>

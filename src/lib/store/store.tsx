@@ -1,15 +1,29 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slice/slice';
+import memberReducer from '../slice/memberSlice';
+import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { combineReducers } from 'redux';
 
-export const makeStore = () => {
-  return configureStore({
-    reducer: {
-      auth: authReducer,
-      // Ajoutez d'autres reducers ici
-    },
-  });
+
+const persistConfig = {
+  key: 'root',
+  storage,
 };
 
-export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore['getState']>;
-export type AppDispatch = AppStore['dispatch'];
+const rootReducer = combineReducers({
+  member:memberReducer
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);

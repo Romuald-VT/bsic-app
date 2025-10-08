@@ -87,3 +87,5 @@ export const bsicAdmin = {
     password:'bsicadmin0000',
     isAdmin:true
 }
+
+export const customerLoggedIn = []

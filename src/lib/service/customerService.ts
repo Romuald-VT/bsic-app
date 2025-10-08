@@ -1,44 +1,64 @@
 "use server"
 
 import { redirect } from "next/navigation";
-import { ActionResult, Customer, CustomerDTO, UpdateAccountResult, User } from "../asset/definitions";
-import { createSession, deleteSession, getSession, SessionData } from "../auth";
+import { ActionResponse, ActionResult, Customer, CustomerDTO, UpdateAccountResult, UpDateAmountResult, User } from "../asset/definitions";
+import {  createCustomerSession, createSession, deleteSession, getSession, SessionData } from "../auth";
 import { insertCustomer,updateCustomer,updateCustomerAccountType,updateCustomerAmount,
     deleteCustomerByEmail,getCustomerByID,getCustomerByEmail,getAllCustomer, 
-    loginUser} from "../repository/customerRepository";
+    loginUser,
+    getCustomerByUUID} from "../repository/customerRepository";
 import { customerSchema, fromDtoToModel, userSchema } from "../validation/validators";
+import serverStore from "../utils/serverStore";
 import { success } from "zod";
 
-export async function handleCustomerForm(customerData:FormData)
+
+export async function handleCustomerForm(prevState:ActionResponse|null,customerData:FormData)
 {
-    if(!customerData.get('firstname') ||!customerData.get('lastname')||!customerData.get('email')||!customerData.get('job')||!customerData.get('phoneNumber')
-    ||!customerData.get('accountType')||!customerData.get('accountNumber')||!customerData.get('amount'))
-{
-    throw new Error("donnees de formulaire manquante !")
-}
+
+    const firstname = customerData.get('firstname')
+    const lastname = customerData.get('lastname')
+    const email = customerData.get('email')
+    const job =customerData.get('job')
+     const phone = customerData.get('phone')
+     const accountType = customerData.get('accountType')
+     const accountNumber = customerData.get('accountNumber')
+     const amount = customerData.get('amount')
+ 
    
    let safeData = null
    const customer:CustomerDTO ={
-     firstname:String(customerData.get('firstname')),
-     lastname:String(customerData.get('lastname')),
-     email:String(customerData.get('email')),
-     job: String(customerData.get('job')),
-     phoneNumber:String(customerData.get('phoneNumber')),
-     accountNumber:Number(customerData.get('accountNumber')),
-     accountType:String(customerData.get('accountType')),
-     amount:Number(customerData.get('amount'))
+     firstname:String(firstname),
+     lastname:String(lastname),
+     email:String(  email),
+     job: String(job),
+     phoneNumber:String(phone),
+     accountNumber:Number(accountNumber),
+     accountType:String(accountType),
+     amount:Number(amount)
    }
-
    const validDto = await customerSchema.safeParse(customer)
    
    if(validDto.error || !validDto.data)
    {
-      throw new Error('donnees de formulaire invalide !')
+      return {
+        success:false,
+        error: validDto.error.message,
+      }
    }
    
     safeData = fromDtoToModel(validDto.data)
-    const savedData = insertCustomer(safeData)
-    return savedData
+    const savedData = await insertCustomer(safeData)
+    if(!savedData)
+    {
+        return{
+            success:false,
+            error:"erreur lors de l'insertion du client"
+        }
+    }
+    return {
+        success:true,
+        data:savedData
+    }
 }
 
 export async function Login(prevState:ActionResult|undefined,loginData:FormData)
@@ -87,21 +107,64 @@ export async function Login(prevState:ActionResult|undefined,loginData:FormData)
         }
     }
     
-    
 }
+
+export async function handleGetUserByUUID(prevState:ActionResponse|null,formData:FormData)
+{
+    try{
+
+        const uuid = String(formData.get('customerID'))
+        if(!uuid)
+        {
+            return {
+                success:false,
+                error:"identifiant utilisateurs invalide"
+            }
+        }
+        const response = await getCustomerByUUID(uuid)
+        if(!response)
+        {
+            return {
+                success:false,
+                error:"utilisateur introuvable"
+            }
+        }
+        await createCustomerSession({customerID:uuid})
+        return {
+            success:true,
+            data:response,
+        }
+
+    }
+    catch(error)
+    {
+        if(error instanceof Error)
+        {
+            return {
+                success:false,
+                error:`erreur de serveur ${error.message}`
+            }
+        }
+        if(error instanceof String)
+        {
+            return {
+                success:false,
+                error:`erreur de serveur ${error.at(0)} `
+            }
+        }
+    }
+}
+
 export async function handleLogout()
 {
     await deleteSession()
     redirect('/admin')
 }
-
-export async function handleUpdateCustomerData (formData:FormData,email:string)
+ 
+export async function handleUpdateCustomerData (prevState:ActionResponse|null,formData:FormData)
 {
-    if(!email)
-    {
-        throw new Error("email du client manquant")
-    }
-    const customer:Partial<Customer> ={
+    
+    const customer:Partial<Customer>={
         firstname: formData.get('firstname')?String(formData.get('firstname')):undefined,
         lastname: formData.get('lastname')?String(formData.get('lastname')):undefined,
         job: formData.get('job')?String(formData.get('job')):undefined,
@@ -110,24 +173,38 @@ export async function handleUpdateCustomerData (formData:FormData,email:string)
         accountNumber: formData.get('accountNumber')?Number(formData.get('accountNumber')):undefined,
         amount: formData.get('amount')?Number(formData.get('amount')):undefined
     }
-    const updatedCustomer = updateCustomer(email,customer)
-    return updatedCustomer  
-}
-export async function handleUpdateCustomerAccountType(email:string,prevState:UpdateAccountResult|null,formData:FormData)
-{
-    try{
-    if(!email)
+    const email = String(formData.get('email'))
+    const updatedCustomer = await updateCustomer(email,customer)
+    if(!updateCustomer)
     {
         return {
             success:false,
-            error:"email du client manquant"    
+            error: "erreur lors de la mise a jor des utilisateurs !"
         }
     }
-    if(!formData.get('accountType'))
+
+    return {
+        success:true,
+        data:updatedCustomer
+    }
+}
+export async function handleUpdateCustomerAccountType(prevState:UpdateAccountResult|null,formData:FormData)
+{
+    try{
+        const accountData = formData.get('accountType')
+    if(!accountData)
     {
         return {
             success:false,
             error:"type de compte manquant"
+        }
+    }
+    const email = String(formData.get('email'))
+    if(!email)
+    {
+        return {
+            success:false,
+            error:"email du client manquant"
         }
     }
     const accountType = String(formData.get('accountType'))
@@ -152,20 +229,39 @@ export async function handleUpdateCustomerAccountType(email:string,prevState:Upd
 
 } 
 
-export async function handleUpdateCustomerAmount(formData:FormData,email:string)
+export async function handleUpdateCustomerAmount(prevState:UpDateAmountResult|null,formData:FormData)
 {
-    if(!email)
-    {
-        throw new Error("email du client manquant")
-    }
-    if(!formData.get('amount'))
-    {
-        throw new Error("montant manquant")
-    }
+    
     const amount = Number(formData.get('amount'))
-    const updatedAmount = updateCustomerAmount(email,amount)
-    return updatedAmount
+    const email = String(formData.get('email'))
+     if(!email)
+    {
+        return{
+            success:false,
+            error:"email invalide"
+        }
+    }
+    if(!amount)
+    {
+        return{
+        success:false,
+        error:"montant non defini !"
+        }
+
+    }
+    const updatedAmount = await updateCustomerAmount(email,amount)
+    if(!updatedAmount)
+    {
+        throw new Error("erreur lors de la mise a jour du montant")
+    }
+
+    return {
+        success:true,
+        data:updatedAmount
+    }
 }  
+
+
 export async function handleCustomerDeletion(email:string)
 {
     if(!email)
@@ -174,8 +270,10 @@ export async function handleCustomerDeletion(email:string)
     }
     return await deleteCustomerByEmail(email)
 }
+
 export async function handleGetCustomerByID(customerID:string)
-{
+{   
+    
     if(!customerID)
     {
         throw new Error('ID du client manquant')

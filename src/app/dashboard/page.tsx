@@ -24,9 +24,7 @@ const Dashboard: React.FC = () => {
   const [job, setJob] = useState<string>("");
 
   // Fonction fetch réutilisable
-  
-  useEffect(() => {
-  const fetchCustomers = async () => {
+  const reload = useCallback(async () => {
     try {
       const res = await handleGetAllCustomers();
       console.log(res)
@@ -48,11 +46,12 @@ const Dashboard: React.FC = () => {
       if (error instanceof Error) {
         toast.error(error.message);
       }
-    }
-  };
+    }},[])
 
-  fetchCustomers();
-}, []);
+
+  useEffect(() => {
+    reload()
+}, [reload]);
 
   const filteredData = useMemo((): Customer[] => {
   return dataApi.filter((item) => {
@@ -84,7 +83,7 @@ const Dashboard: React.FC = () => {
 
       {/* Formulaire ajout client */}
       <div className="my-4">
-        <AddCustomerPanel onCustomerAdded={()=>{}} />
+        <AddCustomerPanel onCustomerAdded={reload} />
       </div>
 
       {/* Filtres */}
@@ -92,7 +91,7 @@ const Dashboard: React.FC = () => {
 
       {/* Gestion loading / erreur / table */}
         <>
-          <CustomersTable records={records} onCustomerDeleted={()=>{}} />
+          <CustomersTable records={records} onCustomerDeleted={reload} />
 
           {/* Pagination centrée sous la table */}
           {nPages > 1 && (

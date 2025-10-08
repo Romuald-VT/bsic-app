@@ -49,3 +49,14 @@ export type UserLogged={
   success: boolean;
   error?: string;
 };
+
+export type UpDateAmountResult = {
+    success: boolean;
+    error?: string;
+    data:Customer
+  };
+export type ActionResponse = {
+    success: boolean;
+    error?: string;
+    data?: Customer;
+  };

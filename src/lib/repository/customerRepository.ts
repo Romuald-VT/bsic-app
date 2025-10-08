@@ -36,6 +36,25 @@ export async function getAllCustomer() {
   }
 }
 
+export async function getCustomerByUUID(uuid:string)
+{
+    try{
+        const data =await  sql`SELECT * FROM customers WHERE customerid=${uuid}`
+        return data
+    }
+    catch(error)
+    {
+        if(error instanceof Error)
+        {
+            return {error:error.message}
+        }
+        if(error instanceof String)
+        {
+            return {error:error}
+        }
+    }
+}
+
 export async function loginUser(username:string,password:string)
 {
     if(!username || !password)
@@ -88,11 +107,21 @@ export async function getCustomerByID(customerID:string)
     
 export async function insertCustomer(customer:Customer)
 {
+    try{
     const result = await sql`INSERT INTO customers (firstname, lastname, email, job, accountType, accountNumber, phoneNumber, amount, customerID)
     VALUES (${customer.firstname}, ${customer.lastname}, ${customer.email}, ${customer.job}, ${customer.accountType}, ${customer.accountNumber}, ${customer.phoneNumber}, ${customer.amount}, ${customer.customerID})
     ON CONFLICT (email) DO NOTHING
     RETURNING TRUE`
     return result[0] as Customer | undefined
+    }
+    catch(error)
+    {
+        if (error instanceof Error) {
+            return {error:error.message}
+        } else {
+            return {error:error};
+        }
+    }
 }
 
 export async function updateCustomer(email:string, customer:Partial<Customer>)
@@ -112,9 +141,9 @@ export async function updateCustomer(email:string, customer:Partial<Customer>)
     } catch (error) {
         
         if (error instanceof Error) {
-            throw new Error(error.message);
+            return {error: error.message}
         } else {
-            throw new Error(String(error));
+            return {error:error}
         }
     }
 }
@@ -131,9 +160,9 @@ export async function updateCustomerAccountType(email:string, accountType:string
     catch(error:unknown)
     {
         if (error instanceof Error) {
-            throw new Error(error.message);
+            return {error:error.message}
         } else {
-            throw new Error(String(error));
+            return {error:error};
         }
     }
 }
@@ -145,15 +174,25 @@ export async function updateCustomerAmount(email:string,amount:number)
         return result
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error(error.message);
+            return {error:error.message}
         } else {
-            throw new Error(String(error));
+            return {error:error}
         }
     }
 }
 
 export async function deleteCustomerByEmail(email:string)
 {
+    try{
     const result = await sql`DELETE FROM customers WHERE email=${email} RETURNING TRUE`
-    return result[0] as Customer | undefined
+    console.log(result)
+    return result[0]
+    }
+    catch(error)
+    {
+        if(error instanceof Error)
+        {
+            return{error:error.message}
+        }
+    }
 }

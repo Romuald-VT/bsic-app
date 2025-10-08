@@ -1,12 +1,25 @@
 'use client'
 
+import { handleCustomerDeletion } from "@/lib/service/customerService";
+import { toast } from "react-toastify";
+
 interface DeleteDialogBoxProps{
     email:string;
     showModal:()=>void;
     onCustomerDeleted:()=>void;
 }
 const DeleteDialogBox:React.FC<DeleteDialogBoxProps>= ({email, showModal, onCustomerDeleted}) => {
-
+    
+  const handleDeletion = async()=>{
+    const data = await handleCustomerDeletion(email)
+    if(!data)
+    {
+      toast.error('suppression impossible !')
+    }
+    toast.success('suppression reussie !')
+    onCustomerDeleted()
+    showModal()
+  }
   return (
     <>
       <div onClick={showModal} className="fixed inset-0 bg-slate-700/40"></div>
@@ -30,11 +43,13 @@ const DeleteDialogBox:React.FC<DeleteDialogBoxProps>= ({email, showModal, onCust
         
         <div className="flex flex-row gap-[120px] mb-2 relative top-10 left-8">
           <button
+            onClick={handleDeletion}
             className="bg-blue-700 text-white w-[75px] h-[40px] rounded-lg hover:bg-blue-500 transition-colors"
           >
             Oui
           </button>
           <button
+            onClick={showModal}
             className="bg-blue-700 text-white w-[75px] h-[40px] rounded-lg hover:bg-blue-500 transition-colors"
           >
             Non
