@@ -152,24 +152,46 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
             }
         }
         await createCustomerSession({customerID:uuid})
-        const customer:Customer = {
-            firstname: response.at(0).firstname,
-            lastname: response.at(0).lastname,
-            email: response.at(0).email,
-            job: response.at(0).job,
-            accountType: response.at(0).accountType,
-            accountNumber: response.at(0).accountNumber,
-            phoneNumber: response.at(0).phoneNumber,
-            amount: response.at(0).amount,
-            customerID: response.at(0).customerID
-        }
 
-        return {
+        const data = response
+        console.log(typeof data)
+        if(!data || 'error' in data )
+        {
+            return{
+                success:false,
+                error:`erreur : ${data.error}` || 'erreur lors du chargement des donnees !',
+                data:{
+                    firstname:"",
+                    lastname:"",
+                    email:"",
+                    job:"",
+                    phoneNumber:"",
+                    accountNumber:0,
+                    accountType:"",
+                    amount:0,
+                    customerID:''
+                }
+            }
+        }
+        console.log(data)
+          
+          const customer:Customer = {
+            firstname: data.at(0)?.firstname,
+            lastname: data.at(0)?.lastname,
+            email: data.at(0)?.email,
+            job: data.at(0)?.job,
+            accountType: data.at(0)?.accountType,
+            accountNumber: data.at(0)?.accountNumber,
+            phoneNumber: data.at(0)?.phoneNumber,
+            amount: data.at(0)?.amount,
+            customerID: data.at(0)?.customerID
+        }
+         return {
             success:true,
             error:"",
             data:customer,
-        }
-
+        }      
+       
     }
     catch(error)
     {

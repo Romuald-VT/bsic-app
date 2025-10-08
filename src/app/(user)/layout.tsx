@@ -5,11 +5,13 @@ import Header from "@/ui/header/HeaderUi";
 import Footer from "@/ui/footer/FooterUI";
 
 const geistSans = Geist({
+  weight:['100','200','300','400','500','600','700','800','900'],
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
+  weight:['100','200','300','400','500','600','700','800','900'],
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
