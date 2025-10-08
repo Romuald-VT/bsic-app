@@ -210,7 +210,6 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
             }
         }
     }
-    finally{
         return  {
       success: false,
       error: 'erreur inconnue',
@@ -226,7 +225,7 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
         customerID: ''
       }
     }
-}
+
 }
 export async function handleLogout()
 {
