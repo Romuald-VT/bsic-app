@@ -1,18 +1,27 @@
 "use server"
 
 import { redirect } from "next/navigation";
-import { ActionResponse, ActionResult, Customer, CustomerDTO, UpdateAccountResult, UpDateAmountResult, User } from "../asset/definitions";
+import { ActionResponse, ActionResult, Customer, CustomerDTO, UpdateAccountResult, UpdateAmountResult, User } from "../asset/definitions";
 import {  createCustomerSession, createSession, deleteSession, getSession, SessionData } from "../auth";
 import { insertCustomer,updateCustomer,updateCustomerAccountType,updateCustomerAmount,
     deleteCustomerByEmail,getCustomerByID,getCustomerByEmail,getAllCustomer, 
     loginUser,
     getCustomerByUUID} from "../repository/customerRepository";
 import { customerSchema, fromDtoToModel, userSchema } from "../validation/validators";
-import serverStore from "../utils/serverStore";
-import { success } from "zod";
 
+const emptyData =  {
+                    firstname:"",
+                    lastname:"",
+                    email:"",
+                    job:"",
+                    phoneNumber:"",
+                    accountNumber:0,
+                    accountType:"",
+                    amount:0,
+                    customerID:''
+                }
 
-export async function handleCustomerForm(prevState:ActionResponse|null,customerData:FormData)
+export async function handleCustomerForm(prevState:ActionResponse|null,customerData:FormData):Promise<ActionResponse>
 {
 
     const firstname = customerData.get('firstname')
@@ -43,20 +52,23 @@ export async function handleCustomerForm(prevState:ActionResponse|null,customerD
       return {
         success:false,
         error: validDto.error.message,
+        data:emptyData
       }
    }
    
     safeData = fromDtoToModel(validDto.data)
     const savedData = await insertCustomer(safeData)
-    if(!savedData)
+    if(!savedData || 'error' in savedData)
     {
         return{
             success:false,
-            error:"erreur lors de l'insertion du client"
+            error:"erreur lors de l'insertion du client",
+            data:emptyData
         }
     }
     return {
         success:true,
+        error:"",
         data:savedData
     }
 }
@@ -255,7 +267,7 @@ export async function handleLogout()
     redirect('/admin')
 }
  
-export async function handleUpdateCustomerData (prevState:ActionResponse|null,formData:FormData)
+export async function handleUpdateCustomerData (prevState:ActionResponse|null,formData:FormData):Promise<ActionResponse>
 {
     
     const customer:Partial<Customer>={
@@ -269,16 +281,18 @@ export async function handleUpdateCustomerData (prevState:ActionResponse|null,fo
     }
     const email = String(formData.get('email'))
     const updatedCustomer = await updateCustomer(email,customer)
-    if(!updateCustomer)
+    if(!updatedCustomer || 'error' in updatedCustomer)
     {
         return {
             success:false,
-            error: "erreur lors de la mise a jor des utilisateurs !"
+            error: "erreur lors de la mise a jor des utilisateurs !",
+            data:emptyData
         }
     }
 
     return {
         success:true,
+        error:"",
         data:updatedCustomer
     }
 }
@@ -323,38 +337,69 @@ export async function handleUpdateCustomerAccountType(prevState:UpdateAccountRes
 
 } 
 
-export async function handleUpdateCustomerAmount(prevState:UpDateAmountResult|null,formData:FormData)
-{
-    
-    const amount = Number(formData.get('amount'))
-    const email = String(formData.get('email'))
-     if(!email)
-    {
-        return{
-            success:false,
-            error:"email invalide"
-        }
-    }
-    if(!amount)
-    {
-        return{
-        success:false,
-        error:"montant non defini !"
-        }
+export async function handleUpdateCustomerAmount(
+  prevState: UpdateAmountResult | undefined,
+  formData: FormData
+): Promise<UpdateAmountResult> {
+  try {
+    const amount = Number(formData.get('amount'));
+    const email = String(formData.get('email'));
 
+    // Validation email
+    if (!email || email.trim() === '') {
+      return {
+        success: false,
+        error: "Email invalide",
+      };
     }
-    const updatedAmount = await updateCustomerAmount(email,amount)
-    if(!updatedAmount)
-    {
-        throw new Error("erreur lors de la mise a jour du montant")
+
+    // Validation montant (permet 0, mais pas NaN ou valeurs négatives)
+    if (isNaN(amount)) {
+      return {
+        success: false,
+        error: "Montant invalide",
+      };
+    }
+
+    if (amount < 0) {
+      return {
+        success: false,
+        error: "Le montant ne peut pas être négatif",
+      };
+    }
+
+    // Mise à jour du montant
+    const updatedAmount = await updateCustomerAmount(email, amount);
+
+    if (!updatedAmount || 'error' in updatedAmount) {
+      return {
+        success: false,
+        error: "Erreur lors de la mise à jour du montant"
+      };
     }
 
     return {
-        success:true,
-        data:updatedAmount
-    }
-}  
+      success: true,
+      error: ""
+    };
 
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour:', error);
+
+    let errorMessage = "Erreur de serveur inconnue";
+
+    if (typeof error === "string") {
+      errorMessage = `Erreur de serveur: ${error}`;
+    } else if (error instanceof Error) {
+      errorMessage = `Erreur de serveur: ${error.message}`;
+    }
+
+    return {
+      success: false,
+      error: errorMessage
+    };
+  }
+}
 
 export async function handleCustomerDeletion(email:string)
 {

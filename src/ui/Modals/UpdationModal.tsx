@@ -1,8 +1,7 @@
 "use client"
 import { CustomerDTO } from "@/lib/asset/definitions";
 import { handleUpdateCustomerData } from "@/lib/service/customerService";
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface EmailModalProps {
@@ -24,7 +23,7 @@ const UpdateFormModal:React.FC<EmailModalProps>= ({ data, showModal }) => {
   const [job, setJob] = useState(data.job);
   const [accountType, setAccountType] = useState(data.accountType);
 
-  const [state,formAction,isPending]= useFormState(handleUpdateCustomerData,null)
+  const [state,formAction,isPending]= useActionState(handleUpdateCustomerData,null)
 
 
   useEffect(() => {

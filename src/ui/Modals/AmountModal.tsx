@@ -1,8 +1,9 @@
 'use client'
-import { useEffect } from "react"
+import { useActionState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { handleUpdateCustomerAmount } from "@/lib/service/customerService";
 import { useFormState } from "react-dom";
+import { UpdateAmountResult } from "@/lib/asset/definitions";
 
 interface AmountDialogProps {
     number:number;
@@ -13,14 +14,14 @@ interface AmountDialogProps {
 
 const AmountDialog:React.FC<AmountDialogProps> = ({number, showModal, email, onAmountUpdated}) => {
 
-    const [state,formAction,isPending] = useFormState(handleUpdateCustomerAmount,undefined)
+    const [state,formAction,isPending] = useActionState(handleUpdateCustomerAmount,undefined)
 
     useEffect(()=>{
         if(state?.error)
         {
             toast.error("erreur lors de la mise a jour du montant !")
         }
-        if(state?.data)
+        if(state?.success)
         {
             toast.success("mise a jour du montant effectuee !")
             onAmountUpdated()

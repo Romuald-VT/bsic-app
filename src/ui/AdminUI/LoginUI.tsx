@@ -1,26 +1,25 @@
-/* eslint-disable no-unused-vars */
+
 'use client'
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormState,useFormStatus } from "react-dom";
-import { toast } from "react-toastify";
+
 
 // 👉 Icônes Heroicons
 import { HiUser, HiEye, HiEyeOff } from "react-icons/hi";
 import { Login } from "@/lib/service/customerService";
 import { useRouter } from "next/navigation";
-import { redirect, useSearchParams } from "next/navigation";
-import { ActionResult } from "@/lib/asset/definitions";
+import { useSearchParams } from "next/navigation";
+
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // 👈 toggle MDP
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [loading, setLoading] = useState(false);
   
 
   const {pending} = useFormStatus()
-  const [state, formAction] = useFormState(Login,undefined)
+  const [state, formAction,isPending] = useActionState(Login,undefined)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/dashboard'
@@ -63,7 +62,7 @@ const LoginForm = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                disabled={loading}
+                disabled={isPending}
               />
               {/* Icône user à droite */}
               <HiUser className="h-5 w-5 text-gray-500 absolute right-3 top-9" />
@@ -85,7 +84,7 @@ const LoginForm = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={loading}
+                disabled={isPending}
               />
               {/* Bouton toggle visibilité */}
               <button

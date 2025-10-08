@@ -50,13 +50,12 @@ export type UserLogged={
   error?: string;
 };
 
-export type UpDateAmountResult = {
+export type UpdateAmountResult = {
     success: boolean;
-    error?: string;
-    data:Customer
-  };
+    error: string;
+  } |undefined;
 export type ActionResponse = {
-    success: boolean|undefined;
-    error: string|undefined;
-    data: Customer|undefined;
-  };
+    success: boolean;
+    error: string;
+    data: Customer;
+  } | undefined;

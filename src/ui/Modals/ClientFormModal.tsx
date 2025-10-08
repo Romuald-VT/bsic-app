@@ -1,5 +1,5 @@
 'use cient'
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import AccountType from "../AdminUI/AccountBtn";
 import { useFormState } from "react-dom";
@@ -21,7 +21,7 @@ const ClientForm:React.FC<ClientFormProps> = ({ setModal, onCustomerAdded }) => 
   const [accountNumber,setAccountNumber] = useState('')
   const [amount,setAmount] = useState(0)
 
-  const [state, formAction,isPending] = useFormState(handleCustomerForm,null)
+  const [state, formAction,isPending] = useActionState(handleCustomerForm,null)
 
   const handleReset = ()=>{
      setFirstname('')

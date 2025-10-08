@@ -171,6 +171,7 @@ export async function updateCustomerAmount(email:string,amount:number)
 {
     try {
         const result = await sql`UPDATE customers SET amount=${amount} WHERE email=${email}`
+        console.log(result)
         return result
     } catch (error) {
         if (error instanceof Error) {
