@@ -62,9 +62,9 @@ const CTASection = () => {
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-4">Prêt à effectuer un transfert ?</h2>
         <p className="text-xl mb-8">Faites l&apos;expérience de la facilité et de la sécurité des services de transfert de BSIC-Bank.</p>
-        <a href="/login">
+        <a href="/memberlogin">
           <button className="bg-white text-blue-500 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300">
-          Commencez votre transfert maintenant
+          Espace Membre 
           </button>
         </a>
       </div>
