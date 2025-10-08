@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+
 import { useState } from "react"
 import { createPortal } from "react-dom"
 import { FaPen } from "react-icons/fa"
