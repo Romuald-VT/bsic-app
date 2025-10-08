@@ -191,7 +191,7 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
                 }
             }
         }
-        if(error instanceof String)
+        if(typeof error === "string")
         {
             return {
                 success:false,
@@ -210,8 +210,24 @@ export async function handleGetUserByUUID(prevState:ActionResponse|null,formData
             }
         }
     }
+    finally{
+        return  {
+      success: false,
+      error: 'erreur inconnue',
+      data: {
+        firstname: "",
+        lastname: "",
+        email: "",
+        job: "",
+        phoneNumber: "",
+        accountNumber: 0,
+        accountType: "",
+        amount: 0,
+        customerID: ''
+      }
+    }
 }
-
+}
 export async function handleLogout()
 {
     await deleteSession()

@@ -56,7 +56,7 @@ export type UpDateAmountResult = {
     data:Customer
   };
 export type ActionResponse = {
-    success: boolean;
-    error: string;
-    data: Customer;
+    success: boolean|undefined;
+    error: string|undefined;
+    data: Customer|undefined;
   };
